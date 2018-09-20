@@ -6,6 +6,9 @@
 pool:
   vmImage: 'Ubuntu 16.04'
 
+variables:
+  CredScanSuppressions: ''
+
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
@@ -14,3 +17,14 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+  displayName: 'Run CredScan'
+  inputs:
+    scanFolder: '$(Build.Repository.LocalPath)'
+
+    suppressionsFile: '$(CredScanSuppressions)'
+
+    debugMode: false
+
+  continueOnError: true
