@@ -118,47 +118,69 @@ from autogen import UserProxyAgent, AssistantAgent
 # Define AI Agents
 planner = AssistantAgent("Planner", llm_config={"model": "gpt-4-turbo"})
 validator = AssistantAgent("Validator", llm_config={"model": "gpt-4-turbo"})
-developer = AssistantAgent("Developer", llm_config={"model": "gpt-4-turbo"})
+
+# Function to execute tasks based on workflow
+def execute_task(task_name, arguments):
+    print(f"\nExecuting {task_name} with {arguments}...\n")
+    
+    # Simulate execution using function calling
+    result = f"Executed {task_name} successfully"
+    
+    return result
 
 # Define Workflow Logic
 def ai_orchestrator(feature_request):
     print("\nAI Planner is creating a workflow...\n")
-    
-    # Planner Agent: Breaks down development tasks
+
+    # Generate development workflow
     workflow = planner.generate_reply(
-        "Break the following request into a development workflow ensuring all steps are included: "
+        "Break the following request into a structured development workflow ensuring all steps are included: "
         + feature_request
     )
 
     print(f"\nPlanned Workflow: {workflow}\n")
-    
-    # Validator Agent: Ensures workflow correctness
+
+    # Validate workflow correctness
     validation = validator.generate_reply(
         "Validate if this workflow covers all necessary steps and follows best practices: " + workflow
     )
-    
+
     if "error" in validation.lower():
         print("\nValidation Failed: Refining workflow...\n")
         return ai_orchestrator(feature_request)
-    
+
     print("\nWorkflow validated. Executing tasks...\n")
 
-    # Execute each step using LLM function calling
-    for task in ["code_generation_agent", "code_review_agent", "testing_agent", "deployment_agent"]:
-        print(f"\nExecuting {task}...\n")
-        result = execute_task(task, {"feature_description": feature_request})
-        
-        # Validate execution
-        validation = validator.generate_reply(f"Is the output of {task} valid? {result}")
-        
+    # Convert workflow into executable steps
+    workflow_steps = workflow.split("\n")  # Assuming steps are separated by newlines
+
+    for step in workflow_steps:
+        if not step.strip():
+            continue  # Skip empty lines
+
+        print(f"\nProcessing step: {step}\n")
+
+        # Extract task name and description from workflow step
+        task_name = step.split(":")[0].strip()  # Example: "Generate Code"
+        task_description = step.split(":")[1].strip() if ":" in step else "No details"
+
+        # Execute the corresponding task
+        result = execute_task(task_name, {"task_description": task_description})
+
+        # Validate execution result
+        validation = validator.generate_reply(f"Is the output of {task_name} valid? {result}")
+
         if "error" in validation.lower():
-            print(f"\n{task} failed. Re-running...\n")
+            print(f"\n{task_name} failed. Re-running...\n")
             return ai_orchestrator(feature_request)
 
-        print(f"\n{task} successful: {result}\n")
-    
+        print(f"\n{task_name} successful: {result}\n")
+
     print("\nSoftware development and deployment completed successfully!")
     return "Success"
+
+# Run AI-Orchestrated Development
+ai_orchestrator("Build an API for user authentication.")
 
 # Run AI-Orchestrated Development
 ai_orchestrator("Build an API for user authentication.")
