@@ -195,17 +195,17 @@ ai_orchestrator("Build an API for user authentication.")
 
 ---
 
-4. How This Works
+## How This Works
 
+| **Step**         | **Role**              | **AI Used**             |
+|------------------|----------------------|-------------------------|
+| **1. Planning**  | Planner Agent        | AutoGen                 |
+| **2. Validation**| Validator Agent      | AutoGen                 |
+| **3. Execution** | Function-based Agents (Code, Review, Test, Deploy) | LLM Function Calling |
+| **4. Re-evaluation** | Validator Agent | AutoGen                 |
 
----
-
-5. Why This Hybrid Approach?
-
-✅ Scalability – AutoGen handles complex reasoning, while LLM function calls execute tasks efficiently.
-✅ Flexibility – AutoGen agents discuss and adjust workflows dynamically.
-✅ Strict Validation – Execution steps are checked before moving forward.
-✅ Reusability – Each LLM-based execution function can be reused for different workflows.
-
-
-
+## Why This Hybrid Approach?
+✅ **Scalability** – AutoGen handles **complex reasoning**, while LLM function calls execute tasks efficiently.  
+✅ **Flexibility** – AutoGen agents **discuss and adjust** workflows dynamically.  
+✅ **Strict Validation** – Execution steps are checked before moving forward.  
+✅ **Reusability** – Each **LLM-based execution function** can be reused for different workflows.
